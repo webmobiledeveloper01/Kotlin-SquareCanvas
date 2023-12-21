@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="100">
+
+    <TextView
+        android:id="@+id/tvCodiPlanta"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="10"
+        android:text="P1"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tvDescPlanta"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="60"
+        android:text="TextView"
+        android:textSize="18sp" />
+
+
+    <TextView
+        android:id="@+id/tvFitxerPlanta"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="30"
+        android:text="TextView"
+        android:textSize="18sp" />
+
+</LinearLayout>

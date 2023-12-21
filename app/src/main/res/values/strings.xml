@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SquareCanvasDemo</string>
+    <string name="CertificatPlagues">It has the pest control certificate hanging on the wall</string>
+    <string name="CertificatAliment">It has the food certificate hanging on the wall</string>
+    <string name="comencarvisita">Start inspection</string>
+    <string name="finalitzarvisita">End inspection</string>
+    <string name="imprimirvisita">Print Inspection</string>
+</resources>
