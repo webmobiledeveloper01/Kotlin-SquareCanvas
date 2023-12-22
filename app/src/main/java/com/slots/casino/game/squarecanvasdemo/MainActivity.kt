@@ -24,27 +24,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.ScaleFactor
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.times
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.slots.casino.game.squarecanvasdemo.ui.theme.SquareCanvasDemoTheme
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
 
@@ -55,9 +51,7 @@ class MainActivity : ComponentActivity() {
                 val viewModal: MyViewModel = viewModel()
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     Main()
                 }
@@ -70,17 +64,20 @@ class MainActivity : ComponentActivity() {
 fun Main(viewModal: MyViewModel = viewModel()): Unit {
     BoxWithConstraints {
 
-        // This will detect any changes to data and recompose your composable.
-        viewModal.onUpdate.value
         val openDialog = remember { mutableStateOf(false) }
         val selectedIndex = remember { mutableStateOf(0) }
-        val widthScale = constraints.maxWidth.toFloat() / if (listbait.floorImage.width == 0) 1f else listbait.floorImage.width.toFloat()
-        val heightScale = constraints.maxHeight.toFloat() /  if (listbait.floorImage.height == 0) 1f else listbait.floorImage.height.toFloat()
-        val scaleFactor = min(widthScale,heightScale)
+        val widthScale =
+            maxWidth / if (listbait.floorImage.width == 0) 1f else listbait.floorImage.width.toFloat()
+        val heightScale =
+            maxHeight / if (listbait.floorImage.height == 0) 1f else listbait.floorImage.height.toFloat()
+        val scaleFactor = min(widthScale, heightScale)
+        val widthCenterOffset =
+            maxWidth / 2f - listbait.floorImage.width * scaleFactor / 2f
+        val heightCenterOffset =
+            maxHeight / 2f - listbait.floorImage.height * scaleFactor / 2f
 
         Box(modifier = Modifier.fillMaxSize()) {
-            Image(
-                bitmap = listbait.floorImage.asImageBitmap(),
+            Image(bitmap = listbait.floorImage.asImageBitmap(),
                 contentDescription = "",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
@@ -89,25 +86,15 @@ fun Main(viewModal: MyViewModel = viewModel()): Unit {
                         detectTapGestures(onLongPress = {
                             Log.d("MainActivity", "Long press: X: ${it.x} , Y: ${it.y}")
                         })
-                    }
-            )
+                    })
 
             viewModal.childTravellersList.forEachIndexed { index, squareInfo ->
 
                 Box(modifier = Modifier
-                    .offset {
-                        IntOffset(
-                            (squareInfo.offsetX +
-                                    squareInfo.posX * scaleFactor
-                                    +(this@BoxWithConstraints.constraints.maxWidth / 2f  - listbait.floorImage.width * scaleFactor /2f)
-                                    )
-                                .roundToInt(),
-                            (squareInfo.offsetY
-                                    + squareInfo.poY * scaleFactor
-                                    +(this@BoxWithConstraints.constraints.maxHeight / 2f  - listbait.floorImage.height * scaleFactor /2f)
-                                    ).roundToInt()
-                        )
-                    }
+                    .offset(viewModal.offsets[index].first
+                        +squareInfo.posX * scaleFactor + widthCenterOffset
+                        , viewModal.offsets[index].second
+                    +squareInfo.poY * scaleFactor + heightCenterOffset)
                     .clickable {
                         Log.d("click", "${index}")
                         selectedIndex.value = index
@@ -116,10 +103,8 @@ fun Main(viewModal: MyViewModel = viewModel()): Unit {
                     .pointerInput(Unit) {
                         detectDragGestures { change, dragAmount ->
                             change.consume()
-
-                            viewModal.update(index, dragAmount.x, dragAmount.y)
-
-
+                            viewModal.offsets[index] =
+                                viewModal.offsets[index].first + dragAmount.x.toDp() to viewModal.offsets[index].second + dragAmount.y.toDp()
                         }
                     }) {
                     Box(
