@@ -10,6 +10,10 @@ class MyViewModel : ViewModel() {
     var onUpdate = mutableStateOf(0)
 
     init {
+
+        for (bait in listbait.bait) {
+            childTravellersList.add(SquareInfo(bait.posX, bait.poY, bait.color, bait.des))
+        }
 //        childTravellersList.add(SquareInfo(20.0,20.0, Color.Red,"R01"))
 //        childTravellersList.add(SquareInfo(200.0,200.0, Color.Blue,"E12"))
 //        childTravellersList.add(SquareInfo(300.0,30.0, Color.Gray,"M14"))
@@ -20,10 +24,8 @@ class MyViewModel : ViewModel() {
     }
 
     fun initAndUpdateScaledSize(
-        width: Float,
-        height: Float,
-        scaledWidth: Float,
-        scaledHeight: Float,
+        widthScaleFactor: Float,
+        heightScaleFactor: Float,
         centerOffsetWidth: Float,
         centerOffsetHeight: Float,
     ) {
@@ -33,16 +35,16 @@ class MyViewModel : ViewModel() {
         }
         childTravellersList.forEach {
             it.posX =
-                it.posX * (scaledWidth + 25f) / (if (width == 0f) 1f else (width + 25f)) + centerOffsetWidth
+                it.posX * widthScaleFactor + centerOffsetWidth
             it.poY =
-                it.poY * (scaledHeight + 25f) / (if (height == 0f) 1f else (height + 25f)) + centerOffsetHeight
+                it.poY * heightScaleFactor + centerOffsetHeight
         }
         updateUI()
     }
 
     fun update(index: Int, posX: Float, posY: Float) {
-        childTravellersList[index].posX += posX.toDouble()
-        childTravellersList[index].poY += posY.toDouble()
+        childTravellersList[index].offsetX += posX
+        childTravellersList[index].offsetY += posY
         updateUI()
     }
 }
